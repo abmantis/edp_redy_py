@@ -13,9 +13,15 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/abmantis/edo_redy_py.git",
     packages=setuptools.find_packages(),
+    install_requires=[
+        'aiohttp',
+        'async_timeout',
+        'datetime'
+    ],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
+
 )
