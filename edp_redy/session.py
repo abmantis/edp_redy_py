@@ -28,10 +28,12 @@ SESSION_TIME = 59
 class EdpRedySession:
     """Representation of an http session to the service."""
 
-    def __init__(self, username, password):
+    def __init__(self, username, password, aiohttp_clientsession, eventloop):
         """Init the session."""
         self._username = username
         self._password = password
+        self._aiohttp_client = aiohttp_clientsession
+        self._eventloop = eventloop
         self._session = None
         self._session_time = datetime.utcnow()
         self.modules_dict = {}
@@ -44,9 +46,9 @@ class EdpRedySession:
                         'screenWidth': '1920', 'screenHeight': '1080'}
 
         try:
-            # create session and fetch login page
-            session = aiohttp.ClientSession()
-            with async_timeout.timeout(DEFAULT_TIMEOUT):
+            # fetch login page
+            session = self._aiohttp_client
+            with async_timeout.timeout(DEFAULT_TIMEOUT, loop=self._eventloop):
                 resp = await session.get(URL_LOGIN_PAGE)
 
         except (asyncio.TimeoutError, aiohttp.ClientError):
@@ -58,7 +60,7 @@ class EdpRedySession:
             return None
 
         try:
-            with async_timeout.timeout(DEFAULT_TIMEOUT):
+            with async_timeout.timeout(DEFAULT_TIMEOUT, loop=self._eventloop):
                 resp = await session.post(URL_LOGIN_PAGE, data=payload_auth)
 
         except (asyncio.TimeoutError, aiohttp.ClientError):
@@ -76,7 +78,7 @@ class EdpRedySession:
         _LOGGER.debug("Logout")
 
         try:
-            with async_timeout.timeout(DEFAULT_TIMEOUT):
+            with async_timeout.timeout(DEFAULT_TIMEOUT, loop=self._eventloop):
                 resp = await self._session.get(URL_LOGOUT)
 
         except (asyncio.TimeoutError, aiohttp.ClientError):
@@ -112,7 +114,7 @@ class EdpRedySession:
             return False
 
         try:
-            with async_timeout.timeout(DEFAULT_TIMEOUT):
+            with async_timeout.timeout(DEFAULT_TIMEOUT, loop=self._eventloop):
                 resp = await self._session.post(URL_GET_ACTIVE_POWER)
         except (asyncio.TimeoutError, aiohttp.ClientError):
             _LOGGER.error("Error while getting active power")
@@ -156,7 +158,7 @@ class EdpRedySession:
             return False
 
         try:
-            with async_timeout.timeout(DEFAULT_TIMEOUT):
+            with async_timeout.timeout(DEFAULT_TIMEOUT, loop=self._eventloop):
                 resp = await self._session.post(URL_GET_SWITCH_MODULES,
                                                 data={"filter": 1})
         except (asyncio.TimeoutError, aiohttp.ClientError):
@@ -206,7 +208,7 @@ class EdpRedySession:
                       str(json_payload))
 
         try:
-            with async_timeout.timeout(DEFAULT_TIMEOUT):
+            with async_timeout.timeout(DEFAULT_TIMEOUT, loop=self._eventloop):
                 resp = await self._session.post(URL_SET_STATE_VAR,
                                                 json=json_payload)
         except (asyncio.TimeoutError, aiohttp.ClientError):
