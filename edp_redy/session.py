@@ -133,8 +133,8 @@ class EdpRedySession:
         try:
             updated_dict = json.loads(active_power_str)
         except (json.decoder.JSONDecodeError, TypeError):
-            _LOGGER.error("Error parsing active power json. Received: \n %s",
-                          active_power_str)
+            _LOGGER.error("Error parsing active power json.")
+            _LOGGER.debug("Received: \n %s", active_power_str)
             return False
 
         if "Body" not in updated_dict:
@@ -146,8 +146,7 @@ class EdpRedySession:
             self.values_dict[ACTIVE_POWER_ID] = \
                 updated_dict["Body"]["ActivePower"] * 1000
         except ValueError:
-            _LOGGER.error(
-                "Could not parse value: ActivePower")
+            _LOGGER.error("Could not parse value: ActivePower")
             self.values_dict[ACTIVE_POWER_ID] = None
 
         return True
@@ -178,8 +177,8 @@ class EdpRedySession:
         try:
             updated_dict = json.loads(modules_str)
         except (json.decoder.JSONDecodeError, TypeError):
-            _LOGGER.error("Error parsing modules json. Received: \n %s",
-                          modules_str)
+            _LOGGER.error("Error parsing modules json.")
+            _LOGGER.debug("Received: \n %s", modules_str)
             return False
 
         if "Body" not in updated_dict:

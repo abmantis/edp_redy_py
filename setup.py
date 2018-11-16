@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="edp_redy",
-    version="0.0.2",
+    version="0.0.3",
     author="Abílio Costa",
     author_email="amfcalt@gmail.com",
     description="Unofficial python module for EDP re:dy",
